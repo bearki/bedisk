@@ -11,4 +11,6 @@ var App GlobalData
 func InitApp() {
 	// 初始化配置文件模块
 	initConfig()
+	// 初始化日志引擎
+	initLog()
 }

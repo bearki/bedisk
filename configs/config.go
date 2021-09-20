@@ -24,6 +24,10 @@ type ConfigFile struct {
 		Host string `ini:"http_serve_host" comment:"HTTP服务监听IP"`
 		Port uint   `ini:"http_serve_port" comment:"HTTP服务监听端口"`
 	} `ini:"http_serve" comment:"HTTP服务配置"`
+	Log struct {
+		Path    string `ini:"log_path" comment:"日志文件储存路径（不含文件名）"`
+		SaveDay uint   `ini:"log_save_day" comment:"日志最大保存天数"`
+	}
 }
 
 // 配置文件全局对象
@@ -41,6 +45,7 @@ func initConfig() {
 func setConfigDefaultVal() {
 	Config.HttpServe.Host = "0.0.0.0" // HTTP服务默认监听全部地址
 	Config.HttpServe.Port = 18018     // HTTP服务默认监听18018端口
+	Config.Log.Path = "./logs/bedisk.log"
 }
 
 // openConfigFile 打开配置文件
