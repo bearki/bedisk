@@ -5,18 +5,19 @@
  *@DateTime 2021/09/20 17:55
  */
 
-package configs
+package conf
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
+	"github.com/Bearki/BeDisk/tools"
 	"github.com/go-ini/ini"
 )
 
 // configFilePath 默认配置文件路径
-var configFilePath = "./config.ini"
+var configFilePath string
 
 // 配置文件结构
 type ConfigFile struct {
@@ -25,8 +26,9 @@ type ConfigFile struct {
 		Port uint   `ini:"http_serve_port" comment:"HTTP服务监听端口"`
 	} `ini:"http_serve" comment:"HTTP服务配置"`
 	Log struct {
-		Path    string `ini:"log_path" comment:"日志文件储存路径（不含文件名）"`
-		SaveDay uint   `ini:"log_save_day" comment:"日志最大保存天数"`
+		DirPath string `ini:"log_path" comment:"日志文件储存文件夹"`
+		SaveDay uint16 `ini:"log_save_day" comment:"日志最大保存天数"`
+		MaxSize uint16 `ini:"max_size" comment:"单文件最大保存容量（单位：MB）"`
 	}
 }
 
@@ -43,9 +45,12 @@ func initConfig() {
 
 // setConfigDefaultVal 赋予配置信息默认值
 func setConfigDefaultVal() {
-	Config.HttpServe.Host = "0.0.0.0" // HTTP服务默认监听全部地址
-	Config.HttpServe.Port = 18018     // HTTP服务默认监听18018端口
-	Config.Log.Path = "./logs/bedisk.log"
+	configFilePath = tools.JoinPath(App.WorkPath, "bedisk.conf") // 默认的配置文件路径
+	Config.HttpServe.Host = "0.0.0.0"                            // HTTP服务默认监听全部地址
+	Config.HttpServe.Port = 18018                                // HTTP服务默认监听18018端口
+	Config.Log.DirPath = tools.JoinPath(App.WorkPath, "logs")    // 默认日志文件夹
+	Config.Log.MaxSize = 128                                     // 默认单日志文件最大储存128MB
+	Config.Log.SaveDay = 30                                      // 默认日志保存30天
 }
 
 // openConfigFile 打开配置文件
@@ -60,25 +65,25 @@ func openConfigFile() (*ini.File, error) {
 			// 创建文件夹部分
 			err = os.MkdirAll(filepath.Dir(configFilePath), 0755)
 			if err != nil {
-				fmt.Printf("create `%s` dir error: %s\n", filepath.Dir(configFilePath), err.Error())
-				return nil, err
+				e := fmt.Errorf("create `%s` dir error: %s", filepath.Dir(configFilePath), err.Error())
+				return nil, e
 			}
 			// 创建文件
 			_, err = os.Create(configFilePath)
 			if err != nil {
-				fmt.Printf("create `%s` file error: %s\n", configFilePath, err.Error())
-				return nil, err
+				e := fmt.Errorf("create `%s` file error: %s", configFilePath, err.Error())
+				return nil, e
 			}
 		} else {
-			fmt.Printf("get `%s` file info error: %s\n", configFilePath, err.Error())
-			return nil, err
+			e := fmt.Errorf("get `%s` file info error: %s", configFilePath, err.Error())
+			return nil, e
 		}
 	}
 	// 加载配置文件到私有全局配置对象，程序不死，它不毁灭
 	cfg, err := ini.Load(configFilePath)
 	if err != nil {
-		fmt.Printf("open `%s` file error: %s\n", configFilePath, err.Error())
-		return nil, err
+		e := fmt.Errorf("open `%s` file error: %s", configFilePath, err.Error())
+		return nil, e
 	}
 	// 返回配置信息
 	return cfg, nil
@@ -95,7 +100,7 @@ func readConfigFile() {
 	// 映射配置信息到结构体
 	err = cfg.MapTo(&App)
 	if err != nil {
-		fmt.Printf("config file map to struct error: %s\n", err.Error())
+		err = fmt.Errorf("config file map to struct error: %s", err.Error())
 		panic(err.Error())
 	}
 }

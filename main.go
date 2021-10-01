@@ -7,28 +7,38 @@ package main
 import (
 	"fmt"
 
-	"github.com/Bearki/BeDisk/configs"
+	"github.com/Bearki/BeDisk/conf"
 	"github.com/Bearki/BeDisk/routers"
-	log "github.com/sirupsen/logrus"
+	"github.com/gin-gonic/gin"
 )
 
 // 初始化操作
 func init() {
 	// 初始化程序
-	configs.InitApp()
+	conf.InitApp()
 }
 
 // 正式开始
 func main() {
+	// 赋值当前GIN运行模式为release
+	if !conf.App.IsDevMode {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	fmt.Println(conf.App.WorkPath)
 	// 初始化路由
 	app := routers.Init()
 	if app == nil {
-		log.Error("applicatopn routers handle is not pointer")
 		panic("applicatopn routers handle is not pointer")
 	}
+	conf.Log.Debug("OK")
+	// 拼接监听地址
+	listenAddress := conf.Config.HttpServe.Host
+	if conf.Config.HttpServe.Port > 0 {
+		listenAddress += fmt.Sprintf(":%d", conf.Config.HttpServe.Port)
+	}
+	conf.Log.Info("listen HTTP serve address: %s", listenAddress)
 	// 启动HTTP服务
-	if err := app.Run(); err != nil {
-		log.Error("http server start error: %s", err.Error())
+	if err := app.Run(listenAddress); err != nil {
 		panic(fmt.Sprintf("http server start error: %s", err.Error()))
 	}
 }

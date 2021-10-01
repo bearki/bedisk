@@ -1,3 +1,5 @@
+github.com/bearki/belog v0.0.0-20210923035841-72aa9a84957b h1:99BhGLAE7tTLqjtO4Thk1pN0E/ZN1z30ZDeeMKrTZMY=
+github.com/bearki/belog v0.0.0-20210923035841-72aa9a84957b/go.mod h1:RweJMfNPxrB2dFt0yRhvYN+nXu/Xj92E2nNZmt+sOlw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

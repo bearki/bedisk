@@ -30,6 +30,7 @@ require (
 )
 
 require (
+	github.com/bearki/belog v0.0.0-20210923035841-72aa9a84957b // indirect
 	github.com/lestrrat/go-strftime v0.0.0-20180220042222-ba3bf9c1d042 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 )
