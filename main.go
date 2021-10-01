@@ -1,14 +1,14 @@
 // @Title 程序主包
 // @Desc 程序入口，一切美好的事将从这里开始
-// @Author Bearki
+// @Author bearki
 // @DateTime 2021/09/20 17:41
 package main
 
 import (
 	"fmt"
 
-	"github.com/Bearki/BeDisk/conf"
-	"github.com/Bearki/BeDisk/routers"
+	"github.com/bearki/bedisk/conf"
+	"github.com/bearki/bedisk/routers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,13 +24,11 @@ func main() {
 	if !conf.App.IsDevMode {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	fmt.Println(conf.App.WorkPath)
 	// 初始化路由
 	app := routers.Init()
 	if app == nil {
 		panic("applicatopn routers handle is not pointer")
 	}
-	conf.Log.Debug("OK")
 	// 拼接监听地址
 	listenAddress := conf.Config.HttpServe.Host
 	if conf.Config.HttpServe.Port > 0 {

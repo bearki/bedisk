@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"github.com/Bearki/BeDisk/tools"
+	"github.com/bearki/bedisk/tools"
 	"github.com/bearki/belog"
 )
 

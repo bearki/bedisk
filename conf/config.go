@@ -12,7 +12,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Bearki/BeDisk/tools"
+	"github.com/bearki/bedisk/tools"
 	"github.com/go-ini/ini"
 )
 
