@@ -21,42 +21,65 @@ var configFilePath string
 
 // 配置文件结构
 type ConfigFile struct {
+	// 程序配置
+	App struct {
+		DataDir string `ini:"data_dir" comment:"数据储存文件夹"`
+	} `ini:"app" comment:"程序配置"`
+	// HTTP服务配置
 	HttpServe struct {
-		Host string `ini:"http_serve_host" comment:"HTTP服务监听IP"`
-		Port uint   `ini:"http_serve_port" comment:"HTTP服务监听端口"`
+		Host string `ini:"host" comment:"HTTP服务监听IP"`
+		Port uint   `ini:"port" comment:"HTTP服务监听端口"`
 	} `ini:"http_serve" comment:"HTTP服务配置"`
+	// Log 日志配置
 	Log struct {
-		DirPath string `ini:"log_path" comment:"日志文件储存文件夹"`
-		SaveDay uint16 `ini:"log_save_day" comment:"日志最大保存天数"`
+		DirPath string `ini:"path" comment:"日志文件储存文件夹"`
+		SaveDay uint16 `ini:"save_day" comment:"日志最大保存天数"`
 		MaxSize uint16 `ini:"max_size" comment:"单文件最大保存容量（单位：MB）"`
-	}
+	} `ini:"log" comment:"日志配置"`
+	// MySQL数据库配置
+	MySQL struct {
+		Host    string `ini:"host" comment:"数据库地址"`
+		Port    uint   `ini:"port" comment:"数据库端口"`
+		Name    string `ini:"name" comment:"数据库名称"`
+		User    string `ini:"username" comment:"数据库用户名"`
+		Passwd  string `ini:"password" comment:"数据库密码"`
+		CharSet string `ini:"charset" comment:"数据库字符集"`
+	} `ini:"mysql" comment:"MySQL数据库配置"`
 }
 
 // 配置文件全局对象
 var Config ConfigFile
 
 // initConfig 初始化配置模块
-func initConfig() {
+// @params configfile string 配置文件路径
+func initConfig(configfile string) {
+	// 赋值配置文件路径
+	configFilePath = configfile
 	// 赋予配置信息默认值
-	setConfigDefaultVal()
+	Config.setConfigDefaultVal()
 	// 读取配置文件
-	readConfigFile()
+	Config.readConfigFile()
 }
 
 // setConfigDefaultVal 赋予配置信息默认值
-func setConfigDefaultVal() {
-	configFilePath = tools.JoinPath(App.WorkPath, "bedisk.conf") // 默认的配置文件路径
-	Config.HttpServe.Host = "0.0.0.0"                            // HTTP服务默认监听全部地址
-	Config.HttpServe.Port = 18018                                // HTTP服务默认监听18018端口
-	Config.Log.DirPath = tools.JoinPath(App.WorkPath, "logs")    // 默认日志文件夹
-	Config.Log.MaxSize = 128                                     // 默认单日志文件最大储存128MB
-	Config.Log.SaveDay = 30                                      // 默认日志保存30天
+func (c *ConfigFile) setConfigDefaultVal() {
+	c.HttpServe.Host = "0.0.0.0"                         // HTTP服务默认监听全部地址
+	c.HttpServe.Port = 18018                             // HTTP服务默认监听18018端口
+	c.Log.DirPath = tools.JoinPath(App.WorkPath, "logs") // 默认日志文件夹
+	c.Log.MaxSize = 128                                  // 默认单日志文件最大储存128MB
+	c.Log.SaveDay = 30                                   // 默认日志保存30天
+	c.MySQL.Host = "127.0.0.1"                           // 默认为本机数据库
+	c.MySQL.Port = 3306                                  // 默认端口3306
+	c.MySQL.Name = "bedisk"                              // 默认数据库名称
+	c.MySQL.User = "root"                                // 默认数据库用户
+	c.MySQL.Passwd = "root"                              // 默认数据库密码
+	c.MySQL.CharSet = "utf8mb4"                          // 默认数据库字符集
 }
 
 // openConfigFile 打开配置文件
 // @return *ini.File 配置信息
 // @return error     错误信息
-func openConfigFile() (*ini.File, error) {
+func (c *ConfigFile) openConfigFile() (*ini.File, error) {
 	// 获取配置文件头信息
 	_, err := os.Stat(configFilePath)
 	if err != nil {
@@ -90,9 +113,9 @@ func openConfigFile() (*ini.File, error) {
 }
 
 // readConfigFile 读取配置文件内容
-func readConfigFile() {
+func (c *ConfigFile) readConfigFile() {
 	// 打开配置文件
-	cfg, err := openConfigFile()
+	cfg, err := c.openConfigFile()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -107,14 +130,11 @@ func readConfigFile() {
 
 // SaveConfigFile 保存配置信息到文件(全量保存)
 // @return         error       错误信息
-func SaveConfigFile() error {
-	// 打开配置文件
-	cfg, err := openConfigFile()
-	if err != nil {
-		return fmt.Errorf("the `%s` profile is not open: %s", configFilePath, err.Error())
-	}
+func (c *ConfigFile) SaveConfigFile() error {
+	// 初始化一个空配置
+	cfg := ini.Empty()
 	// 将结构体反射到配置文件上
-	err = cfg.ReflectFrom(&Config)
+	err := cfg.ReflectFrom(&Config)
 	if err != nil {
 		return fmt.Errorf("struct reflect to ini.file error: %s", err.Error())
 	}

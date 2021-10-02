@@ -5,6 +5,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+
+	"github.com/bearki/bedisk/tools"
 )
 
 // GlobalData 程序全局配置结构
@@ -21,11 +23,18 @@ func InitApp() {
 	// 初始化环境
 	initEnv()
 	// 初始化配置文件模块
-	initConfig()
+	initConfig(tools.JoinPath(App.WorkPath, "bedisk.conf"))
 	// 初始化文件夹创建
 	initMkdir()
 	// 初始化日志引擎
 	initLog()
+	// 初始化MySQL数据库连接
+	initMySQL()
+	// 储存一遍配置文件
+	err := Config.SaveConfigFile()
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 // initEnv 初始化环境
@@ -58,6 +67,7 @@ func initMkdir() {
 	// 定义需要创建的文件夹
 	dirList := []string{
 		path.Dir(Config.Log.DirPath),
+		path.Dir(tools.JoinPath(App.WorkPath, "data")),
 	}
 	// 执行创建
 	for _, dir := range dirList {

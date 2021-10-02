@@ -1,4 +1,6 @@
 @echo off
+@REM 清屏
+cls
 @REM 指定BAT文件为UTF-8编码
 chcp 65001
 @REM 指定系统类型

@@ -3,9 +3,11 @@ module github.com/bearki/bedisk
 go 1.17
 
 require (
-	github.com/bearki/belog v0.0.0-20210923035841-72aa9a84957b
+	github.com/bearki/belog v0.0.1
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-ini/ini v1.63.2
+	gorm.io/driver/mysql v1.1.2
+	gorm.io/gorm v1.21.15
 )
 
 require (
@@ -13,7 +15,10 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
